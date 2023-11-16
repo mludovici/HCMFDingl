@@ -1,0 +1,32 @@
+specVersion: "2.6"
+metadata:
+  name: hcm.fab.myleaverequest
+type: application
+server:
+  customMiddleware:
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertError: false
+        backend:
+          - path: /sap
+            url: http://adeps4p0.saplab.3as-cloud.de:44300
+            client: "300"
+            scp: true
+            destination: S4P_300
+        ui5:
+          path:
+            - /resources
+            - /test-resources
+          url: https://ui5.sap.com
+    - name: fiori-tools-appreload
+      afterMiddleware: compression
+      configuration:
+        port: 35729
+        path: webapp
+        delay: 300
+    - name: fiori-tools-preview
+      afterMiddleware: fiori-tools-appreload
+      configuration:
+        component: hcm.fab.myleaverequest
+        ui5Theme: sap_fiori_3

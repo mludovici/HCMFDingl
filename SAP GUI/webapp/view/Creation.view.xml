@@ -1,0 +1,233 @@
+<!--
+
+    Copyright (C) 2009-2021 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" controllerName="hcm.fab.myleaverequest.controller.Creation"
+	xmlns:semantic="sap.m.semantic" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:u="sap.ui.unified"
+	xmlns:common="hcm.fab.lib.common.controls">
+	<semantic:FullscreenPage id="creationPage" busyIndicatorDelay="0" busy="{= ${create>/busy} || ${global>/isAssignmentLoading} }"
+		navButtonPress="onNavBack" showNavButton="true" showSubHeader="false" floatingFooter="true" title="{create>/viewTitle}">
+		<semantic:content>
+			<common:OnBehalfIndicator id="createOnBehalfIndicator" applicationId="MYLEAVEREQUESTS" class="sapUiResponsiveMargin"/>
+			<!-- Overlap Calendar MessageStrip (DESKTOP / TABLET) -->
+			<MessageStrip id="overlapCalendarInfoStrip" text="{formatter: '.formatter.getCalendarOverlapText', path: 'create>/calendar/overlapNumber'}"
+				type="Information" showIcon="true" visible="{= ${create>/calendar/overlapNumber} > 0 &amp;&amp; !${device>/system/phone}}"
+				class="sapUiTinyMargin sapUiResponsiveMargin">
+				<link>
+					<Link id="timeOverlapCalendarLink" text="{i18n>calendarShowConflicts}" visible="{= (${create>/calendar/overlapNumber} > 0) }"
+						press="onOverlapOpen"/>
+				</link>
+			</MessageStrip>
+			<!-- Leave Type Selection Simple Form-->
+			<f:SimpleForm id="leaveTypeSelectionForm" title="{i18n>createPageLeaveTypeSelectTitle}" editable="true" layout="ResponsiveGridLayout"
+				labelSpanXL="-1" emptySpanXL="-1" columnsXL="-1" labelSpanL="3" emptySpanL="4" columnsL="1" labelSpanM="3" emptySpanM="4" columnsM="1"
+				labelSpanS="12" emptySpanS="0" adjustLabelSpan="false" singleContainerFullSize="false" class="sapUiResponsiveMargin" width="auto">
+				<f:toolbar>
+					<Toolbar id="leaveTypeSelectionToolbar">
+						<Title id="leaveTypeSelectionTitle" level="H2" text="{i18n>createPageLeaveTypeSelectTitle}"/>
+					</Toolbar>
+				</f:toolbar>
+				<f:content>
+					<!-- Type of Leave -->
+					<Label id="leaveTypeLabel" text="{i18n>leaveTypTxt}" labelFor="absenceType"/>
+					<VBox renderType="Bare">
+						<Select id="absenceType" width="100%" items="{}" selectedKey="{AbsenceTypeCode}" forceSelection="false" change="onAbsenceTypeChange"
+							showSecondaryValues="true" enabled="{= !!${AbsenceTypeCode}}" visible="{= ${create>/sEditMode} !== 'DELETE'}"
+							ariaLabelledBy="leaveTypeLabel, quotaAvailabilityLabelInvTxt, quotaAvailabilityText, absDescLabel, absDescText">
+							<items>
+								<core:ListItem id="selectionTypeItem" key="{AbsenceTypeCode}" text="{AbsenceTypeName}" additionalText="{AbsenceTypeCode}"/>
+							</items>
+						</Select>
+						<Input id="absenceTypeInptNotEditable" change="onInputHoursChange" type="Text" editable="false" value="{AbsenceTypeName}"
+							visible="{= ${create>/sEditMode} === 'DELETE'}"/>
+					</VBox>
+					<!--Leave Type Description (PHONE)-->
+					<Button id="absDescLink" text="{i18n>showLeaveTypeDescription}" press="onShowLeaveTypeDescriptionPressed"
+						visible="{= !!${create>/AbsenceDescription}}" class="sapUiTinyMarginBottom"/>
+					<!-- Quota Availability Information -->
+					<Label id="quotaAvailabilityLabel" required="false" text="{i18n>quotaAvailabilityLabel}" labelFor="quotaAvailabilityText"
+						visible="{device>/system/phone}"/>
+					<Text id="quotaAvailabilityText"
+						text="{ parts: [ 'create>/BalanceAvailableQuantityText', 'create>/isQuotaCalculated', 'create>/TimeUnitName'], formatter:'.formatter.formatQuotaAvailability' }"/>
+					<!--Leave Type Description (DESKTOP / TABLET)-->
+					<Label id="absDescLabel" required="false" text="{i18n>leaveTypeDescription}" labelFor="absDescText"
+						visible="{= ${device>/system/desktop} &amp;&amp; !!${create>/AbsenceDescription}}"/>
+					<FormattedText id="absDescText" htmlText="{create>/AbsenceDescription}"
+						visible="{= ${device>/system/desktop} &amp;&amp; !!${create>/AbsenceDescription}}"/>
+				</f:content>
+			</f:SimpleForm>
+			<!-- General Data Simple Form-->
+			<f:SimpleForm id="generalDataForm" title="{i18n>createPageGeneralDataTitle}" editable="true" layout="ResponsiveGridLayout" labelSpanXL="-1"
+				emptySpanXL="-1" columnsXL="-1" labelSpanL="3" emptySpanL="4" columnsL="1" labelSpanM="3" emptySpanM="4" columnsM="1" labelSpanS="12"
+				emptySpanS="0" adjustLabelSpan="false" singleContainerFullSize="false" class="sapUiResponsiveMargin" width="auto">
+				<f:toolbar>
+					<Toolbar id="generalDataFormToolbar">
+						<Title id="generalDataFormTitle" level="H2" text="{i18n>createPageGeneralDataTitle}"/>
+					</Toolbar>
+				</f:toolbar>
+				<f:content>
+					<!-- Multi-/Single-Day Selection -->
+					<!-- [*] More than 1 day    [ ] One day or less -->
+					<Label id="multiSingleDayLabel" text="{i18n>radioButtonLabel}" labelFor="singleOrMultiDayBtnGroup" visible="{device>/system/phone}"/>
+					<RadioButtonGroup id="singleOrMultiDayBtnGroup" columns="2" select="onSingleMultiDayRadioSelected" enabled="{= !!${AbsenceTypeCode} }"
+						editable="{= ${create>/sEditMode} !== 'DELETE'}" selectedIndex="{ path: 'create>/multiOrSingleDayRadioGroupIndex', mode: 'TwoWay' }"
+						ariaLabelledBy="multiSingleDayLabel" width="auto">
+						<buttons>
+							<RadioButton text="{i18n>multiDaysTxt}" class="sapUiSmallMarginEnd"
+								enabled="{ formatter: '.formatter.isMoreThanOneDayAllowed', parts: ['create>/AllowedDurationMultipleDayInd'] }"/>
+							<RadioButton text="{i18n>oneDayTxt}"
+								enabled="{ formatter: '.formatter.isOneDayOrLessAllowed', parts: [ 'create>/AllowedDurationPartialDayInd' , 'create>/AllowedDurationSingleDayInd' ] }"/>
+						</buttons>
+					</RadioButtonGroup>
+					<!--  Start/End Date (CREATE) -->
+					<Label id="rangeSelectorLabel" required="true" visible="{= ${create>/multiOrSingleDayRadioGroupIndex} === 0 }" text="{i18n>startEndTxt}"
+						labelFor="dateRange"/>
+					<DateRangeSelection id="dateRange" enabled="{= !!${AbsenceTypeCode} }" change="onDateRangeChanged"
+						editable="{= ${create>/sEditMode} !== 'DELETE'}" dateValue="{create>/oLeaveStartDate}" secondDateValue="{create>/oLeaveEndDate}"
+						legend="legend" valueState="{create>/sDateRangeValueState}" visible="{= ${create>/multiOrSingleDayRadioGroupIndex} === 0 }"/>
+					<!--  Start Date only -->
+					<Label id="startDateLabel" required="true" text="{i18n>dateTxt}" labelFor="startDate"
+						visible="{= ${create>/multiOrSingleDayRadioGroupIndex} === 1 }"/>
+					<DatePicker id="startDate" change="onDatePickChanged" enabled="{= !!${AbsenceTypeCode} }" editable="{= ${create>/sEditMode} !== 'DELETE'}"
+						value="{ path: 'StartDate', type: 'sap.ui.model.odata.type.DateTime', formatOptions: { UTC: true }, constraints: { displayFormat: 'Date' } }"
+						visible="{= ${create>/multiOrSingleDayRadioGroupIndex} === 1 }" legend="legend"/>
+					<!-- Overlap Calendar MessageStrip (PHONE) -->
+					<Label id="overlapCalendarInfoStripPhoneLabel" required="false" text="{i18n>quotaAvailabilityLabel}"
+						labelFor="overlapCalendarInfoStripPhone" visible="false"/>
+					<MessageStrip id="overlapCalendarInfoStripPhone"
+						text="{formatter: '.formatter.getCalendarOverlapText', path: 'create>/calendar/overlapNumber'}" type="Information" showIcon="true"
+						visible="{= ${create>/calendar/overlapNumber} > 0 &amp;&amp; ${device>/system/phone}}">
+						<link>
+							<Link id="timeOverlapCalendarLinkPhone" text="{i18n>calendarShowConflicts}" visible="{= (${create>/calendar/overlapNumber} > 0) }"
+								press="onOverlapOpen"/>
+						</link>
+					</MessageStrip>
+					<!-- Start Time -->
+					<Label id="startTimeLabel" text="{i18n>startTimePickTxt}" labelFor="startTimePick"
+						visible="{formatter: '.formatter.isTimePickerAvailable', parts: [ 'create>/multiOrSingleDayRadioGroupIndex', 'create>/showTimePicker' ] }"/>
+					<TimePicker id="startTimePick" width="100%" class="sapUiTinyMarginEnd"
+						enabled="{ formatter:'.formatter.isTimePickerEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/inputHoursFilled' } ]}"
+						value="{StartTime}" valueFormat="HHmmss" change="onTimeChange" editable="{= ${create>/sEditMode} !== 'DELETE'}"
+						displayFormat="{ path: 'create>/shortDisplayFormat', formatter:'.formatter.displayTimeShort'}" ariaLabelledBy="startTimeLabel"
+						visible="{formatter: '.formatter.isTimePickerAvailable', parts: [ 'create>/multiOrSingleDayRadioGroupIndex', 'create>/showTimePicker' ] }"/>
+					<!-- End Time -->
+					<Label id="endTimeLabel" text="{i18n>endTimePickTxt}" labelFor="endTimePick"
+						visible="{formatter: '.formatter.isTimePickerAvailable', parts: [ 'create>/multiOrSingleDayRadioGroupIndex', 'create>/showTimePicker' ] }"/>
+					<TimePicker id="endTimePick" width="100%" editable="{= ${create>/sEditMode} !== 'DELETE'}"
+						enabled="{ formatter:'.formatter.isTimePickerEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/inputHoursFilled' } ]}"
+						value="{EndTime}" valueFormat="HHmmss" change="onTimeChange" ariaLabelledBy="endTimeLabel"
+						displayFormat="{ path: 'create>/shortDisplayFormat', formatter:'.formatter.displayTimeShort'}"
+						visible="{formatter: '.formatter.isTimePickerAvailable', parts: [ 'create>/multiOrSingleDayRadioGroupIndex', 'create>/showTimePicker' ] }"/>
+					<!-- Input Hours (string-based) -->
+					<Label id="inputHoursLabel" text="{i18n>inputHoursTxt}" labelFor="hoursValue"
+						visible="{formatter: '.formatter.isInputHoursAvailable', parts: [ 'create>/multiOrSingleDayRadioGroupIndex', 'create>/showInputHours', 'global>/bShowIndustryHours' ] }"/>
+					<Input id="hoursValue" change="onInputHoursChange" type="Text"
+						enabled="{ formatter:'.formatter.isInputHoursEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/timePickerFilled' } ]}"
+						required="false" editable="{= ${create>/sEditMode} !== 'DELETE'}" ariaLabelledBy="inputHoursLabel"
+						visible="{formatter: '.formatter.isInputHoursAvailable', parts: [ 'create>/multiOrSingleDayRadioGroupIndex', 'create>/showInputHours', 'global>/bShowIndustryHours' ] }"
+						value="{ path: 'PlannedWorkingHours', type: 'sap.ui.model.odata.type.Decimal', constraints: { precision: 4, scale: 2, minimum: '0', maximum : '24' }}"/>
+					<!-- Input Hours (time-based) -->
+					<Label id="traditionalHoursLabel" text="{i18n>inputHoursTxt}" labelFor="traditionalHoursPicker"
+						visible="{formatter: '.formatter.isTraditionalHoursAvailable', parts: [ 'create>/multiOrSingleDayRadioGroupIndex', 'create>/showInputHours', 'global>/bShowIndustryHours' ] }"/>
+					<TimePicker id="traditionalHoursPicker" width="100%"
+						enabled="{ formatter:'.formatter.isInputHoursEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/timePickerFilled' } ]}"
+						required="false" editable="{= ${create>/sEditMode} !== 'DELETE'}" ariaLabelledBy="traditionalHoursLabel"
+						visible="{formatter: '.formatter.isTraditionalHoursAvailable', parts: [ 'create>/multiOrSingleDayRadioGroupIndex', 'create>/showInputHours', 'global>/bShowIndustryHours' ] }"
+						change="onInputHoursChange" value="{formatter: '.formatter.convertIndustrialHours', parts: [ {path: 'PlannedWorkingHours'}]}"
+						displayFormat="HH:mm" valueFormat="HH:mm"/>
+					<!-- Quota Usage Information -->
+					<Label id="daysTimeUsageLabel" required="false" text="{i18n>quotaUsageInfo}" labelFor="daysTimeUsagetext" visible="{device>/system/phone}"/>
+					<Text id="daysTimeUsagetext"
+						text="{ parts: [ 'create>/usedWorkingTime', 'create>/usedWorkingTimeUnit'], formatter:'.formatter.formatQuotaUsage' }"
+						visible="{= ${create>/isQuotaCalculated} &amp;&amp; ${formatter:'.formatter.isGroupEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }]}}"/>
+					<!-- Approvers -->
+					<core:Fragment id="approverFragment" fragmentName="hcm.fab.myleaverequest.view.fragments.ApproverCreateSimpleForm" type="XML"/>
+					<!-- New Note -->
+					<Label id="noteLabel" text="{i18n>newNote}" labelFor="newNotesTextArea" visible="{create>/isNoteVisible}"/>
+					<TextArea id="newNotesTextArea" rows="5" growing="true" value="{create>/notes}" liveChange="onNotesLiveChange" valueLiveUpdate="true"
+						visible="{create>/isNoteVisible}" ariaLabelledBy="noteLabel"
+						enabled="{formatter:'.formatter.isGroupEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' } ]}"/>
+					<!--Allow adding elements to the creation view before additional fields section -->
+					<core:ExtensionPoint name="creationMainFieldsExtension"/>
+				</f:content>
+			</f:SimpleForm>
+			<!-- Additional Fields -->
+			<f:SimpleForm id="additionalFieldsSimpleForm" title="{i18n>createFormAddtlDataTitle}" editable="true" layout="ResponsiveGridLayout"
+				labelSpanXL="-1" emptySpanXL="-1" columnsXL="-1" labelSpanL="3" emptySpanL="4" columnsL="1" labelSpanM="3" emptySpanM="4" columnsM="1"
+				labelSpanS="12" emptySpanS="0" adjustLabelSpan="false" singleContainerFullSize="false" class="sapUiResponsiveMargin" width="auto"
+				visible="{= (${create>/AdditionalFields}.length > 0) }">
+				<f:toolbar>
+					<Toolbar id="additionalFieldsSimpleFormToolbar">
+						<Title id="additionalFieldsSimpleFormTitle" level="H2" text="{i18n>createFormAddtlDataTitle}"/>
+					</Toolbar>
+				</f:toolbar>
+				<f:content>
+					<!--filled via the controller Creation.controller.js-->
+				</f:content>
+			</f:SimpleForm>
+			<!-- Comments -->
+			<VBox id="commentsPanel" renderType="Bare" class="sapUiResponsiveMargin" width="auto"
+				visible="{ path:'Notes', formatter:'.formatter.isOldNotesVisible' }">
+				<items>
+					<!-- Old Notes (for edit mode) -->
+					<List id="feedListDisplay" items="{noteModel>/NoteCollection}" width="auto">
+						<headerToolbar>
+							<Toolbar id="notesListToolbar">
+								<Title id="notesListTitle" level="H2" text="{i18n>notesTxt}"/>
+							</Toolbar>
+						</headerToolbar>
+						<items>
+							<FeedListItem sender="{noteModel>EmployeeName}" senderActive="false" icon="sap-icon://employee" iconActive="false" iconDensityAware="false"
+								timestamp="{parts: [{path:'noteModel>Date'}, {path:'noteModel>Time'} ], formatter:'.formatter.formatFeedTimeStamp'}"
+								text="{parts:[{path: 'noteModel>Text'}], formatter:'.formatter.formatNoteText'}" info="{i18n>commentsSecTxt}"/>
+						</items>
+					</List>
+				</items>
+			</VBox>
+			<!-- Attachments -->
+			<VBox id="attachmentsContainer" renderType="Bare" class="sapUiResponsiveMargin" width="auto">
+				<items>
+					<!-- UploadCollection added dynamically via the controller Creation.controller.js-->
+				</items>
+			</VBox>
+		</semantic:content>
+		<!--Allow adding elements at the end of the creation view -->
+		<core:ExtensionPoint name="creationPageExtension"/>
+		<semantic:messagesIndicator>
+			<semantic:MessagesIndicator id="createMessagesIndicator" press="onHandlePopover"/>
+		</semantic:messagesIndicator>
+		<semantic:saveAction>
+			<semantic:SaveAction id="saveButton" enabled="{create>/saveButtonEnabled}" press="onSendRequest"
+				visible="{= ${create>/sEditMode} !== 'DELETE'}"/>
+		</semantic:saveAction>
+		<semantic:mainAction>
+			<semantic:MainAction id="deleteButton" text="{i18n>deleteActionText}" enabled="{create>/saveButtonEnabled}" press="onSendRequest"
+				visible="{= ${create>/sEditMode} === 'DELETE'}"/>
+		</semantic:mainAction>
+		<semantic:cancelAction>
+			<semantic:CancelAction id="cancel" press="onCancel"/>
+		</semantic:cancelAction>
+		<semantic:dependents>
+			<BusyDialog id="busyDialog"/>
+		</semantic:dependents>
+		<core:InvisibleText id="quotaAvailabilityLabelInvTxt" text="{i18n>quotaAvailabilityLabel}"/>
+		<u:CalendarLegend id="legend" visible="false">
+			<u:items>
+				<!-- approved (green) -->
+				<u:CalendarLegendItem
+					text="{parts:[{path: 'i18n>statusConcat'}, {path: 'i18n>approvedTxt'}, {path: 'i18n>informedStatus'}], formatter: 'jQuery.sap.formatMessage'}"
+					tooltip="{parts:[{path: 'i18n>statusConcat'}, {path: 'i18n>approvedTxt'}, {path: 'i18n>informedStatus'}], formatter: 'jQuery.sap.formatMessage'}"
+					type="Type08"/>
+				<!-- sent (yellow) -->
+				<u:CalendarLegendItem text="{i18n>sentTxt}" type="Type01" tooltip="{i18n>sentTxt}"/>
+				<!-- rejected (red) -->
+				<u:CalendarLegendItem text="{i18n>rejectedTxt}" type="Type03" tooltip="{i18n>rejectedTxt}"/>
+				<!-- Public Holiday (light blue) -->
+				<u:CalendarLegendItem id="pubHolidayCalLegend" text="{i18n>publicHolidayTxt}" type="Type09" tooltip="{i18n>publicHolidayTxt}"/>
+				<!--Allow adding further items to the calendar legend -->
+				<core:ExtensionPoint name="overviewCalendarLegendExtension"/>
+			</u:items>
+		</u:CalendarLegend>
+	</semantic:FullscreenPage>
+</mvc:View>

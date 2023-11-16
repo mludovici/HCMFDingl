@@ -1,0 +1,120 @@
+<!--
+
+    Copyright (C) 2009-2021 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core">
+	<!-- Approver Level 1 -->
+	<Label id="approverLevel1Label"
+		text="{= ${create>/IsMultiLevelApproval} &amp;&amp; ${create>/iMaxApproverLevel} > 1 ? ${i18n>approverLevel1Txt} : ${i18n>approverTxt}}"
+		labelFor="approverLevel1Input" visible="{= ${create>/isApproverVisible}}"/>
+	<FlexBox alignItems="Start" alignContent="SpaceBetween" justifyContent="SpaceBetween" renderType="Bare" busy="{create>/isLoadingApprovers}"
+		visible="{= ${create>/isApproverVisible}}">
+		<Input id="approverLevel1Input" value="{ApproverLvl1/Name}" maxLength="40"
+			editable="{= ${create>/isApproverEditable} &amp;&amp; !${ApproverLvl1/DefaultFlag}}"
+			enabled="{ formatter:'.formatter.isGroupEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' } ]}" type="Text"
+			showValueHelp="true" valueHelpOnly="true" valueHelpRequest="onApproverValueHelp">
+			<customData>
+				<core:CustomData key="approverLevel" value="1"/>
+			</customData>
+		</Input>
+		<!--Remove Approver Button -->
+		<Button id="removeApproverLvl1Btn" class="sapUiTinyMarginBegin" icon="sap-icon://sys-cancel" type="Transparent"
+			press="onRemoveApproverClicked" tooltip="{i18n>removeApproverTxt}" visible="{= ${create>/isAddDeleteApproverAllowed}}" enabled="false"/>
+		<!--Add Approver Button -->
+		<Button id="addApproverLvl1Btn" tooltip="{i18n>addApproverTxt}" icon="sap-icon://add" type="Transparent" press="onAddApproverClicked"
+			visible="{= ${create>/isAddDeleteApproverAllowed}}"
+			enabled="{formatter:'.formatter.isAddApproverLvl1ButtonEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/iCurrentApproverLevel' }, {path:'create>/iMaxApproverLevel'} ]}"/>
+	</FlexBox>
+	<!-- Approver Level 2 -->
+	<Label id="approverLevel2Label" text="{i18n>approverLevel2Txt}" labelFor="approverLevel2Input"
+		visible="{= ${create>/isApproverVisible} &amp;&amp; ${create>/iMaxApproverLevel} > 1 &amp;&amp; ${create>/iCurrentApproverLevel} > 1}"/>
+	<FlexBox alignItems="Start" alignContent="SpaceBetween" justifyContent="SpaceBetween" renderType="Bare" busy="{create>/isLoadingApprovers}"
+		visible="{= ${create>/isApproverVisible} &amp;&amp; ${create>/iMaxApproverLevel} > 1 &amp;&amp; ${create>/iCurrentApproverLevel} > 1}">
+		<Input id="approverLevel2Input" value="{ApproverLvl2/Name}" maxLength="40"
+			editable="{= ${create>/isApproverEditable} &amp;&amp; !${ApproverLvl2/DefaultFlag}}"
+			enabled="{ formatter:'.formatter.isGroupEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' } ]}" type="Text"
+			showValueHelp="true" valueHelpOnly="true" valueHelpRequest="onApproverValueHelp">
+			<customData>
+				<core:CustomData key="approverLevel" value="2"/>
+			</customData>
+		</Input>
+		<!--Remove Approver Button -->
+		<Button id="removeApproverLvl2Btn" class="sapUiTinyMarginBegin" icon="sap-icon://sys-cancel" type="Transparent"
+			press="onRemoveApproverClicked" tooltip="{i18n>removeApproverTxt}"
+			visible="{= ${create>/isAddDeleteApproverAllowed} &amp;&amp; ${create>/IsMultiLevelApproval}}"
+			enabled="{formatter:'.formatter.isRemoveApproverLvl2ButtonEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/iCurrentApproverLevel' } ]}"/>
+		<!--Add Approver Button -->
+		<Button id="addApproverLvl2Btn" tooltip="{i18n>addApproverTxt}" icon="sap-icon://add" type="Transparent" press="onAddApproverClicked"
+			visible="{= ${create>/isAddDeleteApproverAllowed} &amp;&amp; ${create>/IsMultiLevelApproval}}"
+			enabled="{formatter:'.formatter.isAddApproverLvl2ButtonEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/iCurrentApproverLevel' }, {path:'create>/iMaxApproverLevel'} ]}"/>
+	</FlexBox>
+	<!-- Approver Level 3 -->
+	<Label id="approverLevel3Label" text="{i18n>approverLevel3Txt}" labelFor="approverLevel3Input"
+		visible="{= ${create>/isApproverVisible} &amp;&amp; ${create>/iMaxApproverLevel} > 2 &amp;&amp; ${create>/iCurrentApproverLevel} > 2}"/>
+	<FlexBox alignItems="Start" alignContent="SpaceBetween" justifyContent="SpaceBetween" renderType="Bare" busy="{create>/isLoadingApprovers}"
+		visible="{= ${create>/isApproverVisible} &amp;&amp; ${create>/iMaxApproverLevel} > 2 &amp;&amp; ${create>/iCurrentApproverLevel} > 2}">
+		<Input id="approverLevel3Input" value="{ApproverLvl3/Name}" maxLength="40"
+			editable="{= ${create>/isApproverEditable} &amp;&amp; !${ApproverLvl3/DefaultFlag}}"
+			enabled="{ formatter:'.formatter.isGroupEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' } ]}" type="Text"
+			showValueHelp="true" valueHelpOnly="true" valueHelpRequest="onApproverValueHelp">
+			<customData>
+				<core:CustomData key="approverLevel" value="3"/>
+			</customData>
+		</Input>
+		<!--Remove Approver Button -->
+		<Button id="removeApproverLvl3Btn" class="sapUiTinyMarginBegin" icon="sap-icon://sys-cancel" type="Transparent"
+			press="onRemoveApproverClicked" tooltip="{i18n>removeApproverTxt}"
+			visible="{= ${create>/isAddDeleteApproverAllowed} &amp;&amp; ${create>/IsMultiLevelApproval}}"
+			enabled="{formatter:'.formatter.isRemoveApproverLvl3ButtonEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/iCurrentApproverLevel' } ]}"/>
+		<!--Add Approver Button -->
+		<Button id="addApproverLvl3Btn" tooltip="{i18n>addApproverTxt}" icon="sap-icon://add" type="Transparent" press="onAddApproverClicked"
+			visible="{= ${create>/isAddDeleteApproverAllowed} &amp;&amp; ${create>/IsMultiLevelApproval}}"
+			enabled="{formatter:'.formatter.isAddApproverLvl3ButtonEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/iCurrentApproverLevel' }, {path:'create>/iMaxApproverLevel'} ]}"/>
+	</FlexBox>
+	<!-- Approver Level 4 -->
+	<Label id="approverLevel4Label" text="{i18n>approverLevel4Txt}" labelFor="approverLevel4Input"
+		visible="{= ${create>/isApproverVisible} &amp;&amp; ${create>/iMaxApproverLevel} > 3 &amp;&amp; ${create>/iCurrentApproverLevel} > 3}"/>
+	<FlexBox alignItems="Start" alignContent="SpaceBetween" justifyContent="SpaceBetween" renderType="Bare" busy="{create>/isLoadingApprovers}"
+		visible="{= ${create>/isApproverVisible} &amp;&amp; ${create>/iMaxApproverLevel} > 3 &amp;&amp; ${create>/iCurrentApproverLevel} > 3}">
+		<Input id="approverLevel4Input" value="{ApproverLvl4/Name}" maxLength="40"
+			editable="{= ${create>/isApproverEditable} &amp;&amp; !${ApproverLvl4/DefaultFlag}}"
+			enabled="{ formatter:'.formatter.isGroupEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' } ]}" type="Text"
+			showValueHelp="true" valueHelpOnly="true" valueHelpRequest="onApproverValueHelp">
+			<customData>
+				<core:CustomData key="approverLevel" value="4"/>
+			</customData>
+		</Input>
+		<!--Remove Approver Button -->
+		<Button id="removeApproverLvl4Btn" class="sapUiTinyMarginBegin" icon="sap-icon://sys-cancel" type="Transparent"
+			press="onRemoveApproverClicked" tooltip="{i18n>removeApproverTxt}"
+			visible="{= ${create>/isAddDeleteApproverAllowed} &amp;&amp; ${create>/IsMultiLevelApproval}}"
+			enabled="{formatter:'.formatter.isRemoveApproverLvl4ButtonEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/iCurrentApproverLevel' } ]}"/>
+		<!--Add Approver Button -->
+		<Button id="addApproverLvl4Btn" tooltip="{i18n>addApproverTxt}" icon="sap-icon://add" type="Transparent" press="onAddApproverClicked"
+			visible="{= ${create>/isAddDeleteApproverAllowed} &amp;&amp; ${create>/IsMultiLevelApproval}}"
+			enabled="{formatter:'.formatter.isAddApproverLvl4ButtonEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/iCurrentApproverLevel' }, {path:'create>/iMaxApproverLevel'} ]}"/>
+	</FlexBox>
+	<!-- Approver Level 5 -->
+	<Label id="approverLevel5Label" text="{i18n>approverLevel5Txt}" labelFor="approverLevel5Input"
+		visible="{= ${create>/isApproverVisible} &amp;&amp; ${create>/iMaxApproverLevel} > 4 &amp;&amp; ${create>/iCurrentApproverLevel} > 4}"/>
+	<FlexBox alignItems="Start" alignContent="SpaceBetween" justifyContent="SpaceBetween" renderType="Bare" busy="{create>/isLoadingApprovers}"
+		visible="{= ${create>/isApproverVisible} &amp;&amp; ${create>/iMaxApproverLevel} > 4 &amp;&amp; ${create>/iCurrentApproverLevel} > 4}">
+		<Input id="approverLevel5Input" value="{ApproverLvl5/Name}" maxLength="40"
+			editable="{= ${create>/isApproverEditable} &amp;&amp; !${ApproverLvl5/DefaultFlag}}"
+			enabled="{ formatter:'.formatter.isGroupEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' } ]}" type="Text"
+			showValueHelp="true" valueHelpOnly="true" valueHelpRequest="onApproverValueHelp">
+			<customData>
+				<core:CustomData key="approverLevel" value="5"/>
+			</customData>
+		</Input>
+		<!--Remove Approver Button -->
+		<Button id="removeApproverLvl5Btn" class="sapUiTinyMarginBegin" icon="sap-icon://sys-cancel" type="Transparent"
+			press="onRemoveApproverClicked" tooltip="{i18n>removeApproverTxt}"
+			visible="{= ${create>/isAddDeleteApproverAllowed} &amp;&amp; ${create>/IsMultiLevelApproval}}"
+			enabled="{formatter:'.formatter.isRemoveApproverLvl5ButtonEnabled', parts: [ { path: 'StartDate' }, { path: 'AbsenceTypeCode' }, { path: 'create>/iCurrentApproverLevel' } ]}"/>
+		<!--Add Approver Button -->
+		<Button id="addApproverLvl5Btn" tooltip="{i18n>addApproverTxt}" icon="sap-icon://add" type="Transparent" press="onAddApproverClicked"
+			visible="{= ${create>/isAddDeleteApproverAllowed} &amp;&amp; ${create>/IsMultiLevelApproval}}" enabled="false"/>
+	</FlexBox>
+</core:FragmentDefinition>

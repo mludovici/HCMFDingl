@@ -1,0 +1,13 @@
+<!--
+
+    Copyright (C) 2009-2021 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core">
+	<Label required="{create>Required}" visible="true" text="{create>FieldLabel}"/>
+	<TimePicker
+		enabled="{ parts: [{ path: 'create>Readonly' }, { path: 'StartDate' }, { path: 'AbsenceTypeCode' }], formatter: '.formatter.isAdditionalFieldEnabled' }"
+		editable="{= ${create>/sEditMode} !== 'DELETE'}"
+		displayFormat="{ path: 'create>/shortDisplayFormat', formatter:'.formatter.displayTimeShort'}" value="{create>fieldValue}"
+		valueFormat="HHmmss" minutesStep="15"/>
+</core:FragmentDefinition>

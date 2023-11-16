@@ -1,0 +1,39 @@
+<!--
+
+    Copyright (C) 2009-2021 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">,
+	<SelectDialog id="mySelectDialog" title="{i18n>multiLeaveSelectTitle}" contentWidth="30em" contentHeight="auto" multiSelect="false"
+		rememberSelections="false" confirm="onMultiLeaveConfirm" items="{multiLeave>/aLeaves}">
+		<items>
+			<ObjectListItem id="multiListItem" type="Inactive" title="{multiLeave>AbsenceTypeName}"
+				number="{path:'multiLeave>PlannedWorkingHours', formatter:'.formatter.availableDays'}"
+				numberUnit="{path:'multiLeave>PlannedWorkingHours', formatter:'.formatter.formatPlannedWorkingHoursText'}"
+				intro="{path:'multiLeave>StartDate', type: 'sap.ui.model.odata.type.DateTime', constraints: { displayFormat : 'Date' }, formatOptions: { style: 'long' }}">
+				<attributes>
+					<!--Planned Working Hours (Absence Hours) -->
+					<ObjectAttribute id="workingHoursReq" title="{i18n>absenceHoursTxt}"
+						text="{path:'multiLeave>PlannedWorkingHours', formatter:'.formatter.formatPlannedWorkingHours'}"/>
+					<!--Start/End Time -->
+					<ObjectAttribute id="startEndTimeAttr" title="{i18n>timePickTxt}"
+						text="{parts:[{path:'multiLeave>StartTime', type:'sap.ui.model.type.Time', formatOptions:{ source : { pattern : 'HHmmss' }}},{path:'multiLeave>EndTime', type:'sap.ui.model.type.Time', formatOptions:{ source : { pattern : 'HHmmss' }}}],formatter:'.formatter.formatTimeToShortLocale'}"
+						visible="{= ${multiLeave>StartTime} !== '000000'}"/>
+					<!--Quota Used -->
+					<ObjectAttribute id="quotaUsedAttr" title="{i18n>quotaUsedTxt}" visible="{= parseFloat(${multiLeave>QuotaUsed}) &gt; 0}"
+						text="{parts:[{path:'i18n>leaveDurTextWCode'},{path:'multiLeave>QuotaUsed', type: 'sap.ui.model.odata.type.Double', formatOptions: { maxFractionDigits: 5, minFractionDigits: 0 }}, {path:'multiLeave>TimeUnitTxt'}], formatter:'.formatter.formatUsedQuotaAttribute'}"/>
+					<!--Created On -->
+					<ObjectAttribute title="{i18n>createdOn}"
+						text="{parts:[{path:'multiLeave>FirstSubmissionDate'},{path:'multiLeave>FirstSubmissionTime'}], formatter:'.formatter.formatCreationTimeStamp'}"/>
+					<!--Approver -->
+					<ObjectAttribute id="approverAttr" title="{i18n>approverTxt}" text="{multiLeave>ApproverEmployeeName}"
+						visible="{= !!${multiLeave>ApproverEmployeeName}}"/>
+				</attributes>
+				<firstStatus>
+					<ObjectStatus id="multiState" text="{multiLeave>StatusTxt}"
+						state="{ path: 'multiLeave>StatusID', formatter: '.formatter.getListItemStatus' }"/>
+				</firstStatus>
+			</ObjectListItem>
+		</items>
+	</SelectDialog>
+</core:FragmentDefinition>

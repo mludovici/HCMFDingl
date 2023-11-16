@@ -1,0 +1,12 @@
+<!--
+
+    Copyright (C) 2009-2021 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core">
+	<Label id="addFieldIntegerLabel" required="{create>Required}" visible="true" text="{create>FieldLabel}" labelFor="addFieldInteger"/>
+	<Input id="addFieldInteger" required="{create>Required}" maxLength="{= parseInt(${create>Length}, 10) || 0 }"
+		editable="{= ${create>/sEditMode} !== 'DELETE'}"
+		enabled="{ parts: [{ path: 'create>Readonly' }, { path: 'StartDate' }, { path: 'AbsenceTypeCode' }], formatter: '.formatter.isAdditionalFieldEnabled' }"
+		value="{ path: 'create>fieldValue', type: 'sap.ui.model.type.Integer'}"/>
+</core:FragmentDefinition>

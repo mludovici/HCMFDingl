@@ -1,0 +1,12 @@
+<!--
+
+    Copyright (C) 2009-2021 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+	<Label id="addFieldInputLabel" required="{create>Required}" visible="true" text="{create>FieldLabel}" labelFor="addFieldInput"/>
+	<Input id="addFieldInput"
+		enabled="{ parts: [{ path: 'create>Readonly' }, { path: 'StartDate' }, { path: 'AbsenceTypeCode' }], formatter: '.formatter.isAdditionalFieldEnabled' }"
+		editable="{= ${create>/sEditMode} !== 'DELETE'}" liveChange="onAdditionalFieldLiveChange" required="{create>Required}"
+		value="{create>fieldValue}" maxLength="{= parseInt(${create>Length}, 10) || 0 }" showValueHelp="false"/>
+</core:FragmentDefinition>
